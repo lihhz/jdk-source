@@ -4,3 +4,4 @@
 /target/
 /.idea
 *.iml
+/jdk1.7/.idea/
