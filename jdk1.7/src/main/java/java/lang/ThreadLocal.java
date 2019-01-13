@@ -1,33 +1,11 @@
-/*
- * Copyright (c) 1997, 2007, Oracle and/or its affiliates. All rights reserved.
- * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- */
-
 package java.lang;
 import java.lang.ref.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
+ *
+ * 线程本地变量
+ *
  * This class provides thread-local variables.  These variables differ from
  * their normal counterparts in that each thread that accesses one (via its
  * <tt>get</tt> or <tt>set</tt> method) has its own, independently initialized
@@ -140,13 +118,16 @@ public class ThreadLocal<T> {
      * @return the current thread's value of this thread-local
      */
     public T get() {
+        // 获取当前线程
         Thread t = Thread.currentThread();
+        // 获取线程中的threadLocals，他是一个key为当前ThreadLocal，value是set的值
         ThreadLocalMap map = getMap(t);
         if (map != null) {
             ThreadLocalMap.Entry e = map.getEntry(this);
             if (e != null)
                 return (T)e.value;
         }
+        // 如果为空，执行initialValue方法
         return setInitialValue();
     }
 
@@ -157,8 +138,10 @@ public class ThreadLocal<T> {
      * @return the initial value
      */
     private T setInitialValue() {
+        // 执行initialValue(),并返回值
         T value = initialValue();
         Thread t = Thread.currentThread();
+        // 这里set方法使用的就是this
         ThreadLocalMap map = getMap(t);
         if (map != null)
             map.set(this, value);
