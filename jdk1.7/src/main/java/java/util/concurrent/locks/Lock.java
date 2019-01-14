@@ -1,38 +1,3 @@
-/*
- * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- */
-
-/*
- *
- *
- *
- *
- *
- * Written by Doug Lea with assistance from members of JCP JSR-166
- * Expert Group and released to the public domain, as explained at
- * http://creativecommons.org/publicdomain/zero/1.0/
- */
-
 package java.util.concurrent.locks;
 import java.util.concurrent.TimeUnit;
 
@@ -180,6 +145,7 @@ public interface Lock {
      * circumstances and the exception type must be documented by that
      * {@code Lock} implementation.
      */
+    // 获取锁。如果没有获取到锁，则一直等待，直到获取到锁
     void lock();
 
     /**
@@ -228,6 +194,7 @@ public interface Lock {
      *         interrupted while acquiring the lock (and interruption
      *         of lock acquisition is supported).
      */
+    // 如果当前线程未被中断，获取锁
     void lockInterruptibly() throws InterruptedException;
 
     /**
@@ -257,6 +224,7 @@ public interface Lock {
      * @return {@code true} if the lock was acquired and
      *         {@code false} otherwise
      */
+    // 如果当前锁空闲，则获取锁返回true，否则返回false
     boolean tryLock();
 
     /**
@@ -317,6 +285,7 @@ public interface Lock {
      *         while acquiring the lock (and interruption of lock
      *         acquisition is supported)
      */
+    // 如果当前锁非空闲，则等待time unit，期间如果获取锁返回true，否则返回false
     boolean tryLock(long time, TimeUnit unit) throws InterruptedException;
 
     /**
@@ -331,6 +300,7 @@ public interface Lock {
      * Any restrictions and the exception
      * type must be documented by that {@code Lock} implementation.
      */
+    // 解锁
     void unlock();
 
     /**
@@ -352,5 +322,7 @@ public interface Lock {
      * @throws UnsupportedOperationException if this {@code Lock}
      *         implementation does not support conditions
      */
+    // 创建Condition，将其绑定到当前的lock实例
+    // Condition#await()将会自动释放锁
     Condition newCondition();
 }

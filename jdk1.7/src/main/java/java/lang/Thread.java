@@ -1,28 +1,3 @@
-/*
- * Copyright (c) 1994, 2011, Oracle and/or its affiliates. All rights reserved.
- * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- */
-
 package java.lang;
 
 import java.lang.ref.Reference;
@@ -146,6 +121,7 @@ class Thread implements Runnable {
     }
 
     private char        name[];
+    // 线程优先级
     private int         priority;
     private Thread      threadQ;
     private long        eetop;
@@ -188,6 +164,7 @@ class Thread implements Runnable {
     ThreadLocal.ThreadLocalMap inheritableThreadLocals = null;
 
     /*
+     * 如果没有指定，默认为0
      * The requested stack size for this thread, or 0 if the creator did
      * not specify a stack size.  It is up to the VM to do whatever it
      * likes with this number; some VMs will ignore it.
@@ -349,14 +326,23 @@ class Thread implements Runnable {
      * @param stackSize the desired stack size for the new thread, or
      *        zero to indicate that this parameter is to be ignored.
      */
+    /**
+     * 初始化一个线程
+     * @param g 线程组
+     * @param target Runnable
+     * @param name 线程名称
+     * @param stackSize 设置当前线程栈大小
+     */
     private void init(ThreadGroup g, Runnable target, String name,
                       long stackSize) {
+        // 名称不能为空
         if (name == null) {
             throw new NullPointerException("name cannot be null");
         }
-
+        // 设置当前线程为新线程的父线程
         Thread parent = currentThread();
         SecurityManager security = System.getSecurityManager();
+        // 如果没有指定线程组，从SecurityManager或者父类中获取线程组
         if (g == null) {
             /* Determine if it's an applet or not */
 
@@ -387,9 +373,10 @@ class Thread implements Runnable {
         }
 
         g.addUnstarted();
-
+        // 初始化
         this.group = g;
         this.daemon = parent.isDaemon();
+        // 用父线程优先级来初始化子线程优先级
         this.priority = parent.getPriority();
         this.name = name.toCharArray();
         if (security == null || isCCLOverridden(parent.getClass()))
@@ -398,6 +385,7 @@ class Thread implements Runnable {
             this.contextClassLoader = parent.contextClassLoader;
         this.inheritedAccessControlContext = AccessController.getContext();
         this.target = target;
+        // 用父线程优先级来初始化子线程优先级
         setPriority(priority);
         if (parent.inheritableThreadLocals != null)
             this.inheritableThreadLocals =
@@ -680,6 +668,7 @@ class Thread implements Runnable {
          *
          * A zero status value corresponds to state "NEW".
          */
+        // 当调用start()方法时，必须处于NEW状态
         if (threadStatus != 0)
             throw new IllegalThreadStateException();
 
@@ -703,7 +692,7 @@ class Thread implements Runnable {
             }
         }
     }
-
+    // 调用本地方法
     private native void start0();
 
     /**
@@ -1097,9 +1086,11 @@ class Thread implements Runnable {
      * @see        #MIN_PRIORITY
      * @see        ThreadGroup#getMaxPriority()
      */
+    // 设置优先级
     public final void setPriority(int newPriority) {
         ThreadGroup g;
         checkAccess();
+        // 非法优先级
         if (newPriority > MAX_PRIORITY || newPriority < MIN_PRIORITY) {
             throw new IllegalArgumentException();
         }
@@ -1246,6 +1237,7 @@ class Thread implements Runnable {
      *          <i>interrupted status</i> of the current thread is
      *          cleared when this exception is thrown.
      */
+    // 等待该线程终止
     public final synchronized void join(long millis)
     throws InterruptedException {
         long base = System.currentTimeMillis();
@@ -1254,12 +1246,12 @@ class Thread implements Runnable {
         if (millis < 0) {
             throw new IllegalArgumentException("timeout value is negative");
         }
-
+        // 如果millis == 0 线程将一直等待下去
         if (millis == 0) {
             while (isAlive()) {
                 wait(0);
             }
-        } else {
+        } else {// 指定了millis ，等待指定时间以后，会break当前线程
             while (isAlive()) {
                 long delay = millis - now;
                 if (delay <= 0) {
@@ -1752,6 +1744,7 @@ class Thread implements Runnable {
         /**
          * Thread state for a thread which has not yet started.
          */
+        // 线程刚被创建，还没有开始
         NEW,
 
         /**
@@ -1760,6 +1753,7 @@ class Thread implements Runnable {
          * be waiting for other resources from the operating system
          * such as processor.
          */
+        // 调用了start(),此时线程不一定处于运行状态，可能处于等待
         RUNNABLE,
 
         /**
@@ -1769,6 +1763,7 @@ class Thread implements Runnable {
          * reenter a synchronized block/method after calling
          * {@link Object#wait() Object.wait}.
          */
+        // 线程阻塞，等待synchronized块或者代码的监控锁
         BLOCKED,
 
         /**
@@ -1804,12 +1799,14 @@ class Thread implements Runnable {
          *   <li>{@link LockSupport#parkUntil LockSupport.parkUntil}</li>
          * </ul>
          */
+
         TIMED_WAITING,
 
         /**
          * Thread state for a terminated thread.
          * The thread has completed execution.
          */
+        // 线程已经执行完毕
         TERMINATED;
     }
 
