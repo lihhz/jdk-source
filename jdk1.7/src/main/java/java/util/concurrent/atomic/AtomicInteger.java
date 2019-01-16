@@ -1,38 +1,3 @@
-/*
- * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- */
-
-/*
- *
- *
- *
- *
- *
- * Written by Doug Lea with assistance from members of JCP JSR-166
- * Expert Group and released to the public domain, as explained at
- * http://creativecommons.org/publicdomain/zero/1.0/
- */
-
 package java.util.concurrent.atomic;
 import sun.misc.Unsafe;
 
@@ -62,48 +27,29 @@ public class AtomicInteger extends Number implements java.io.Serializable {
             (AtomicInteger.class.getDeclaredField("value"));
       } catch (Exception ex) { throw new Error(ex); }
     }
-
+    // 操作的数值
     private volatile int value;
 
-    /**
-     * Creates a new AtomicInteger with the given initial value.
-     *
-     * @param initialValue the initial value
-     */
+    /** 使用给定数字初始化*/
     public AtomicInteger(int initialValue) {
         value = initialValue;
     }
 
-    /**
-     * Creates a new AtomicInteger with initial value {@code 0}.
-     */
+    /** 默认 0 初始化*/
     public AtomicInteger() {
     }
 
-    /**
-     * Gets the current value.
-     *
-     * @return the current value
-     */
+    /**获取value*/
     public final int get() {
         return value;
     }
 
-    /**
-     * Sets to the given value.
-     *
-     * @param newValue the new value
-     */
+    /**使用给定值设置*/
     public final void set(int newValue) {
         value = newValue;
     }
 
-    /**
-     * Eventually sets to the given value.
-     *
-     * @param newValue the new value
-     * @since 1.6
-     */
+    /** Eventually sets to the given value. */
     public final void lazySet(int newValue) {
         unsafe.putOrderedInt(this, valueOffset, newValue);
     }
@@ -114,6 +60,7 @@ public class AtomicInteger extends Number implements java.io.Serializable {
      * @param newValue the new value
      * @return the previous value
      */
+    /** 获取原始值并设置新值 */
     public final int getAndSet(int newValue) {
         for (;;) {
             int current = get();
@@ -131,6 +78,7 @@ public class AtomicInteger extends Number implements java.io.Serializable {
      * @return true if successful. False return indicates that
      * the actual value was not equal to the expected value.
      */
+    /** 使用CAS设更新值 */
     public final boolean compareAndSet(int expect, int update) {
         return unsafe.compareAndSwapInt(this, valueOffset, expect, update);
     }
@@ -156,6 +104,7 @@ public class AtomicInteger extends Number implements java.io.Serializable {
      *
      * @return the previous value
      */
+    /** 获取当前值并且自增1 */
     public final int getAndIncrement() {
         for (;;) {
             int current = get();
@@ -170,6 +119,7 @@ public class AtomicInteger extends Number implements java.io.Serializable {
      *
      * @return the previous value
      */
+    /** 获取当前值并且自减1 */
     public final int getAndDecrement() {
         for (;;) {
             int current = get();
@@ -185,6 +135,7 @@ public class AtomicInteger extends Number implements java.io.Serializable {
      * @param delta the value to add
      * @return the previous value
      */
+     /** 获取当前值并且加上给定值 */
     public final int getAndAdd(int delta) {
         for (;;) {
             int current = get();
@@ -199,6 +150,7 @@ public class AtomicInteger extends Number implements java.io.Serializable {
      *
      * @return the updated value
      */
+    /** 相当于++i */
     public final int incrementAndGet() {
         for (;;) {
             int current = get();
@@ -213,6 +165,7 @@ public class AtomicInteger extends Number implements java.io.Serializable {
      *
      * @return the updated value
      */
+    /** 相当于 --i */
     public final int decrementAndGet() {
         for (;;) {
             int current = get();
@@ -228,6 +181,7 @@ public class AtomicInteger extends Number implements java.io.Serializable {
      * @param delta the value to add
      * @return the updated value
      */
+    /** 先加再获取 */
     public final int addAndGet(int delta) {
         for (;;) {
             int current = get();
